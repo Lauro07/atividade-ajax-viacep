@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="demo">
+    <h1>Fetch API com Async/Await</h1>
+    <input type="text" name="cep" id="cep" placeholder="Digite seu CEP">
+        <button type="button" onclick="loadDocAsync()">Pesquisar CEP</button>
+    <br>
+    <input type="text" id="logradouro" placeholder="Logradouro">
+    <br>
+    <input type="text" id="complemento" placeholder="Complemento">
+    <br>
+    <input type="text" id="bairro" placeholder="Bairro">
+    <br>
+    <input type="text" id="localidade" placeholder="Cidade">
+    <br>
+    <input type="text" id="uf" placeholder="UF">
+</div>
+<script>
+// A função precisa ser declarada como 'async'
+async function loadDocAsync() {
+  // obtém o CEP digitado
+  let cep = document.getElementById("cep").value;
+
+  console.log("Iniciando requisição com async/await...");
+
+  // Usamos try...catch para tratar erros, similar ao .catch() das Promises
+  try {
+    // A palavra 'await' pausa a execução da função
+    // até que a Promise do fetch seja resolvida
+    const response = await fetch("https://viacep.com.br/ws/" + cep + "/json");
+    
+    console.log("Resposta HTTP recebida.");
+
+    // Verificamos se a resposta da rede foi bem-sucedida
+    if (!response.ok) {
+        throw new Error("Erro na rede: " + response.statusText);
+    }
+
+    // Usamos 'await' novamente para esperar a Promise
+    // do response.json() ser resolvida
+    const endereco = await response.json();
+
+    console.log("JSON recebido:", endereco);
+
+    // O código abaixo é síncrono e preenche os campos
+    document.getElementById("logradouro").value = endereco.logradouro;
+    document.getElementById("complemento").value = endereco.complemento;
+    document.getElementById("bairro").value = endereco.bairro;
+    document.getElementById("localidade").value = endereco.localidade;
+    document.getElementById("uf").value = endereco.uf;
+
+  } catch (error) {
+    // Se qualquer uma das Promises (fetch ou .json())
+    // for rejeitada, o 'catch' captura o erro.
+    console.error("Houve um problema com a requisição async:", error);
+  }
+}
+</script>
+
+</body>
+</html>

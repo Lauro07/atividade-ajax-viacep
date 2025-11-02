@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="demo">
+    <h1>Fetch API com Promises (.then/.catch)</h1>
+    <input type="text" name="cep" id="cep" placeholder="Digite seu CEP">
+        <button type="button" onclick="loadDocFetch()">Pesquisar CEP</button>
+    <br>
+    <input type="text" id="logradouro" placeholder="Logradouro">
+    <br>
+    <input type="text" id="complemento" placeholder="Complemento">
+    <br>
+    <input type="text" id="bairro" placeholder="Bairro">
+    <br>
+    <input type="text" id="localidade" placeholder="Cidade">
+    <br>
+    <input type="text" id="uf" placeholder="UF">
+</div>
+<script>
+function loadDocFetch() {
+  // obtém o CEP digitado
+  let cep = document.getElementById("cep").value;
+
+  console.log("Iniciando requisição com fetch...");
+
+  // fetch retorna uma Promise
+  fetch("https://viacep.com.br/ws/" + cep + "/json")
+    .then(response => {
+        // O primeiro .then trata a resposta HTTP.
+        // response.json() também retorna uma Promise
+        // que resolve com os dados do corpo (o JSON)
+        console.log("Resposta HTTP recebida, processando JSON...");
+        if (!response.ok) {
+            // Se a resposta não for OK (ex: 404), lança um erro
+            throw new Error("Erro na rede: " + response.statusText);
+        }
+        return response.json(); 
+    })
+    .then(endereco => {
+        // O segundo .then recebe os dados JSON processados
+        console.log("JSON recebido:", endereco);
+
+        // Preenche os campos do formulário
+        document.getElementById("logradouro").value = endereco.logradouro;
+        document.getElementById("complemento").value = endereco.complemento;
+        document.getElementById("bairro").value = endereco.bairro;
+        document.getElementById("localidade").value = endereco.localidade;
+        document.getElementById("uf").value = endereco.uf;
+    })
+    .catch(error => {
+        // .catch() captura qualquer erro que ocorra em qualquer
+        // ponto da cadeia de Promises (falha de rede ou o erro que lançamos)
+        console.error("Houve um problema com a requisição fetch:", error);
+    });
+}
+</script>
+
+</body>
+</html>
